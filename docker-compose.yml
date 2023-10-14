@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  # database
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgresusr
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: songvutdb
+    volumes:
+      - "./docker-volume/postgres:/var/lib/postgresql/data"
+
+  # cache
+  cache:
+    image: redis/redis-stack:latest
+    container_name: cache
+    ports:
+      - "6379:6379"
+      - "9000:8001"
+    volumes:
+      - "./docker-volume/redis:/data"
+
+  # task-manager
+  task-manager-service:
+    build:
+      context: .
+    container_name: task-manager-service
+    ports:
+      - 8080:8080
+    volumes:
+      - ./config/config.yaml:/app/config/config.yaml
